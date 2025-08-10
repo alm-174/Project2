@@ -4,12 +4,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.javaweb.model.BuildingDTO;
+import com.javaweb.model.request.BuildingRequest;
+import com.javaweb.repository.entity.BuildingEntity;
 import com.javaweb.service.BuildingService;
 
 @RestController
@@ -18,11 +21,12 @@ public class BuildingAPI {
 	private BuildingService buildingService;
 
 	@PostMapping(value = "/api/building/")
-	public List<BuildingDTO> getBuilding3(@RequestParam(name = "name", required = false) String name,
-										@RequestParam(name = "districtid", required = false) Long districtid,
-										@RequestParam(name = "typecode", required = false) List<String> typeCodeDTO) {
+	public List<BuildingDTO> getBuilding(@ModelAttribute BuildingRequest buildingRequest) {
 
-		List<BuildingDTO> result = buildingService.findAll(name, districtid);
+		List<BuildingDTO> result = buildingService.findAll(buildingRequest.getName(), buildingRequest.getFloorArea(), buildingRequest.getDistrictId(),
+				buildingRequest.getWard(), buildingRequest.getStreet(), buildingRequest.getNumberOfBasement(), buildingRequest.getDirector(), buildingRequest.getLevel(),
+				buildingRequest.getAreaFrom(), buildingRequest.getAreaTo(), buildingRequest.getRentPriceFrom(), buildingRequest.getRentPriceTo(),
+				buildingRequest.getManagerName(), buildingRequest.getManagerPhoneNumber(), buildingRequest.getUserId(), buildingRequest.getRenttypeCode());
 		return result;
 
 	}

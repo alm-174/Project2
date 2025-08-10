@@ -21,18 +21,89 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	static final String USER = "root";
 	static final String PASS = "123456";
 
+
 	@Override
-	public List<BuildingEntity> findAll(String name, Long districtid) {
+	public List<BuildingEntity> findAll(String name, Integer floorArea, String ward, String street, Integer districtId,
+			Integer numberOfBasement, String direction, String level, Integer areaFrom, Integer areaTo,
+			Integer rentPriceFrom, Integer rentPriceTo, String managerName, String managerPhoneNumber, Integer userId,
+			List<String> renttypeCode) {
+		// TODO Auto-generated method stub
 		List<BuildingEntity> result = new ArrayList<>();
-		StringBuilder sql = new StringBuilder("SELECT * FROM building b where 1 = 1");
+		StringBuilder sql = new StringBuilder("SELECT b.id, b.name, b.numberofbasement, d.name AS districtname, b.ward, b.street, b.floorarea, b.managername, b.managerphonenumber, b.rentprice, b.servicefee, b.brokeragefee "
+				+ " FROM  estatebasic.building b "
+				+ " inner join estatebasic.rentarea ra on ra.id = b.buildingid "
+				+ " inner join estatebasic.district d on d.id = b.districtid "
+				+ " inner join estatebasic.assignmentbuilding ab on ab.buildingid = b.id "
+				+ " inner join estatebasic.user u on u.id = ab.staffid "
+				+ " inner join estatebasic.buildingrenttype br on b.id = br.buildingid "
+				+ " inner join estatebasic.renttype r on r.id = br.renttypeid WHERE 1 = 1 ");
 		if(name != null && !name.equals(""))
 		{
 			sql.append(" AND b.name like '%" + name + "%' ");
 		}
-		if(districtid != null)
+		if(floorArea != null && floorArea != 0)
 		{
-			sql.append(" AND b.districtid = " + districtid + " ");
+			sql.append(" AND b.floorarea = " + floorArea);
 		}
+		if(ward != null && !ward.equals(""))
+		{
+			sql.append(" AND b.ward like '%" + ward + "%' ");
+		}
+		if(street != null && !street.equals(""))
+		{
+			sql.append(" AND b.street like '%" + street + "%' ");
+		}
+		if(districtId != null )
+		{
+			sql.append(" AND d.id = " + districtId);
+		}
+		if(numberOfBasement != null )
+		{
+			sql.append(" AND b.numberofbasement = " + numberOfBasement);
+		}
+		if(direction != null && !direction.equals(""))
+		{
+			sql.append(" AND b.direction like '%" + direction + "%' ");
+		}
+		if(level != null && !level.equals(""))
+		{
+			sql.append(" AND b.level like '%" + level + "%' ");
+		}
+		if(areaFrom != null )
+		{
+			sql.append(" AND ra.value >= " + areaFrom);
+		}
+		if(areaTo != null )
+		{
+			sql.append(" AND ra.value <= " + areaTo);
+		}
+		if(rentPriceFrom != null )
+		{
+			sql.append(" AND b.rentprice >= " + rentPriceFrom);
+		}
+		if(rentPriceTo != null )
+		{
+			sql.append(" AND b.rentprice <= " + rentPriceTo);
+		}
+		if(managerName != null && !managerName.equals(""))
+		{
+			sql.append(" AND b.managerName like '%" + managerName + "%' ");
+		}
+		if(managerPhoneNumber != null && !managerPhoneNumber.equals(""))
+		{
+			sql.append(" AND b.managerPhoneNumber like '%" + managerPhoneNumber + "%' ");
+		}
+		if(userId != null )
+		{
+			sql.append(" AND u.id = " + userId);
+		}
+		/*if(renttypeCode != null)
+		{
+			for(String item : renttypeCode)
+			{
+				sql.append(" AND u.id = " + userId);
+			}
+		}*/
 		try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql.toString());) { // rs trả về từng hàng của building
