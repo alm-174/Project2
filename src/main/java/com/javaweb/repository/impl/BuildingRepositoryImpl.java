@@ -29,9 +29,9 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			List<String> renttypeCode) {
 		// TODO Auto-generated method stub
 		List<BuildingEntity> result = new ArrayList<>();
-		StringBuilder sql = new StringBuilder("SELECT b.id, b.name, b.numberofbasement, d.name AS districtname, b.ward, b.street, b.floorarea, b.managername, b.managerphonenumber, b.rentprice, b.servicefee, b.brokeragefee "
+		StringBuilder sql = new StringBuilder("SELECT b.name, b.numberofbasement, d.name AS districtname, b.ward, b.street, b.floorarea, b.managername, b.managerphonenumber, b.rentprice, b.servicefee, b.brokeragefee "
 				+ " FROM  estatebasic.building b "
-				+ " inner join estatebasic.rentarea ra on ra.id = b.buildingid "
+				+ " inner join estatebasic.rentarea ra on b.id = ra.buildingid "
 				+ " inner join estatebasic.district d on d.id = b.districtid "
 				+ " inner join estatebasic.assignmentbuilding ab on ab.buildingid = b.id "
 				+ " inner join estatebasic.user u on u.id = ab.staffid "
@@ -87,32 +87,47 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}
 		if(managerName != null && !managerName.equals(""))
 		{
-			sql.append(" AND b.managerName like '%" + managerName + "%' ");
+			sql.append(" AND b.managername like '%" + managerName + "%' ");
 		}
 		if(managerPhoneNumber != null && !managerPhoneNumber.equals(""))
 		{
-			sql.append(" AND b.managerPhoneNumber like '%" + managerPhoneNumber + "%' ");
+			sql.append(" AND b.managerphonenumber like '%" + managerPhoneNumber + "%' ");
 		}
 		if(userId != null )
 		{
 			sql.append(" AND u.id = " + userId);
 		}
-		/*if(renttypeCode != null)
+		if(renttypeCode != null)
 		{
-			for(String item : renttypeCode)
+			sql.append(" AND (");
+			for(String item : renttypeCode) 
 			{
-				sql.append(" AND u.id = " + userId);
+				if(item != null && item.equals(""))
+				{
+					sql.append(" r.code = " +"'" + item + "' OR ");
+				}
+				
 			}
-		}*/
+			sql.append(" 1 = 0) ");
+		}
+		//sql.append(" GROUP BY b.id");
 		try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql.toString());) { // rs trả về từng hàng của building
 			while (rs.next()) {
 				BuildingEntity building = new BuildingEntity();
 				building.setName(rs.getString("name"));
+				building.setDistrict(rs.getString("districtname"));
 				building.setStreet(rs.getString("street"));
 				building.setWard(rs.getString("ward"));
 				building.setNumberOfBasement(rs.getInt("numberofbasement"));
+				building.setManagerName(rs.getString("managername"));
+				building.setManagerPhoneNumber(rs.getString("managerphonenumber"));
+				building.setFloorArea(rs.getInt("floorarea"));
+				building.setAreaFree(null);
+				building.setRentPrice(rs.getInt("rentprice"));
+				building.setServiceFee(rs.getInt("servicefee"));
+				building.setBrokerageFee(rs.getInt("brokeragefee"));
 				result.add(building);
 			}
 

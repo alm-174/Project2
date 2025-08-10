@@ -16,7 +16,7 @@ public class BuildingServiceImpl implements BuildingService{
 
 	@Autowired //tìm kiếm các interface 
 	private BuildingRepository buildingRepository;
-	@Override
+	/*@Override
 	public List<BuildingDTO> findAll(String name, Long districtid) {
 
 		List<BuildingEntity> buildingEntities = buildingRepository.findAll(name, districtid);
@@ -29,6 +29,33 @@ public class BuildingServiceImpl implements BuildingService{
 			building.setNumberOfBasement(item.getNumberOfBasement());
 			result.add(building);
 			}
+		return result;
+	}*/
+	@Override
+	public List<BuildingDTO> findAll(String name, Integer floorArea, String ward, String street, Integer districtId,
+			Integer numberOfBasement, String direction, String level, Integer areaFrom, Integer areaTo,
+			Integer rentPriceFrom, Integer rentPriceTo, String managerName, String managerPhoneNumber, Integer userId,
+			List<String> renttypeCode) {
+		// TODO Auto-generated method stub
+		List<BuildingEntity> buildingEntities = buildingRepository.findAll(name, floorArea, ward, street, districtId, 
+				numberOfBasement, direction, level, areaFrom, areaTo, rentPriceFrom, rentPriceTo, managerName, managerPhoneNumber, userId, renttypeCode);
+		List<BuildingDTO> result = new ArrayList<>();
+		for(BuildingEntity item : buildingEntities)
+		{
+			BuildingDTO tmp = new BuildingDTO();
+			tmp.setName(item.getName());
+			tmp.setAddress(item.getStreet() + ", " + item.getWard() + ", " + item.getDistrict() );
+			tmp.setNumberOfBasement(item.getNumberOfBasement());
+			tmp.setManagerName(item.getManagerName());
+			tmp.setManagerPhoneNumber(item.getManagerPhoneNumber());
+			tmp.setFloorArea(item.getFloorArea());
+			tmp.setAreaFree(item.getAreaFree());
+			tmp.setRentPrice(item.getRentPrice());
+			tmp.setServiceFee(item.getServiceFee());
+			tmp.setBrokerageFee(item.getBrokerageFee());
+			result.add(tmp);
+			
+		}
 		return result;
 	}
 
