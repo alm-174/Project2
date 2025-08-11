@@ -23,10 +23,7 @@ public class BuildingAPI {
 	@PostMapping(value = "/api/building/")
 	public List<BuildingDTO> getBuilding(@ModelAttribute BuildingRequest buildingRequest) {
 
-		List<BuildingDTO> result = buildingService.findAll(buildingRequest.getName(), buildingRequest.getFloorArea(), 
-				buildingRequest.getWard(), buildingRequest.getStreet(), buildingRequest.getDistrictId(), buildingRequest.getNumberOfBasement(), buildingRequest.getDirector(), buildingRequest.getLevel(),
-				buildingRequest.getAreaFrom(), buildingRequest.getAreaTo(), buildingRequest.getRentPriceFrom(), buildingRequest.getRentPriceTo(),
-				buildingRequest.getManagerName(), buildingRequest.getManagerPhoneNumber(), buildingRequest.getUserId(), buildingRequest.getRenttypeCode());
+		List<BuildingDTO> result = buildingService.findAll(buildingRequest);
 		return result;
 
 	}

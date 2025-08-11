@@ -25,11 +25,11 @@ public class BuildingRequest {
 	public void setDistrictId(Integer districtId) {
 		this.districtId = districtId;
 	}
-	public String getDirector() {
+	public String getDirection() {
 		return direction;
 	}
-	public void setDirector(String director) {
-		this.direction = director;
+	public void setDirection(String direction) {
+		this.direction = direction;
 	}
 	public String getLevel() {
 		return level;

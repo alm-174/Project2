@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.javaweb.model.BuildingDTO;
+import com.javaweb.model.request.BuildingRequest;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
 import com.javaweb.service.BuildingService;
@@ -31,14 +32,11 @@ public class BuildingServiceImpl implements BuildingService{
 			}
 		return result;
 	}*/
+
 	@Override
-	public List<BuildingDTO> findAll(String name, Integer floorArea, String ward, String street, Integer districtId,
-			Integer numberOfBasement, String direction, String level, Integer areaFrom, Integer areaTo,
-			Integer rentPriceFrom, Integer rentPriceTo, String managerName, String managerPhoneNumber, Integer userId,
-			List<String> renttypeCode) {
+	public List<BuildingDTO> findAll(BuildingRequest buildingRequest) {
 		// TODO Auto-generated method stub
-		List<BuildingEntity> buildingEntities = buildingRepository.findAll(name, floorArea, ward, street, districtId, 
-				numberOfBasement, direction, level, areaFrom, areaTo, rentPriceFrom, rentPriceTo, managerName, managerPhoneNumber, userId, renttypeCode);
+		List<BuildingEntity> buildingEntities = buildingRepository.findAll(buildingRequest);
 		List<BuildingDTO> result = new ArrayList<>();
 		for(BuildingEntity item : buildingEntities)
 		{

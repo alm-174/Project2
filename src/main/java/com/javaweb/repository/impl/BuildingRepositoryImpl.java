@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.javaweb.model.request.BuildingRequest;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
 
@@ -22,11 +23,9 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	static final String PASS = "123456";
 
 
+
 	@Override
-	public List<BuildingEntity> findAll(String name, Integer floorArea, String ward, String street, Integer districtId,
-			Integer numberOfBasement, String direction, String level, Integer areaFrom, Integer areaTo,
-			Integer rentPriceFrom, Integer rentPriceTo, String managerName, String managerPhoneNumber, Integer userId,
-			List<String> renttypeCode) {
+	public List<BuildingEntity> findAll(BuildingRequest buildingRequest) {
 		// TODO Auto-generated method stub
 		List<BuildingEntity> result = new ArrayList<>();
 		StringBuilder sql = new StringBuilder("SELECT b.name, b.numberofbasement, d.name AS districtname, b.ward, b.street, b.floorarea, b.managername, b.managerphonenumber, b.rentprice, b.servicefee, b.brokeragefee "
@@ -37,70 +36,70 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				+ " inner join estatebasic.user u on u.id = ab.staffid "
 				+ " inner join estatebasic.buildingrenttype br on b.id = br.buildingid "
 				+ " inner join estatebasic.renttype r on r.id = br.renttypeid WHERE 1 = 1 ");
-		if(name != null && !name.equals(""))
+		if(buildingRequest.getName() != null && !buildingRequest.getName().equals(""))
 		{
-			sql.append(" AND b.name like '%" + name + "%' ");
+			sql.append(" AND b.name like '%" + buildingRequest.getName() + "%' ");
 		}
-		if(floorArea != null && floorArea != 0)
+		if(buildingRequest.getFloorArea() != null && buildingRequest.getFloorArea() != 0)
 		{
-			sql.append(" AND b.floorarea = " + floorArea);
+			sql.append(" AND b.floorarea = " + buildingRequest.getFloorArea());
 		}
-		if(ward != null && !ward.equals(""))
+		if(buildingRequest.getWard() != null && !buildingRequest.getWard().equals(""))
 		{
-			sql.append(" AND b.ward like '%" + ward + "%' ");
+			sql.append(" AND b.ward like '%" + buildingRequest.getWard() + "%' ");
 		}
-		if(street != null && !street.equals(""))
+		if(buildingRequest.getStreet() != null && !buildingRequest.getStreet().equals(""))
 		{
-			sql.append(" AND b.street like '%" + street + "%' ");
+			sql.append(" AND b.street like '%" + buildingRequest.getStreet() + "%' ");
 		}
-		if(districtId != null )
+		if(buildingRequest.getDistrictId() != null )
 		{
-			sql.append(" AND d.id = " + districtId);
+			sql.append(" AND d.id = " + buildingRequest.getDistrictId());
 		}
-		if(numberOfBasement != null )
+		if(buildingRequest.getNumberOfBasement() != null )
 		{
-			sql.append(" AND b.numberofbasement = " + numberOfBasement);
+			sql.append(" AND b.numberofbasement = " + buildingRequest.getNumberOfBasement());
 		}
-		if(direction != null && !direction.equals(""))
+		if(buildingRequest.getDirection() != null && !buildingRequest.getDirection().equals(""))
 		{
-			sql.append(" AND b.direction like '%" + direction + "%' ");
+			sql.append(" AND b.direction like '%" + buildingRequest.getDirection() + "%' ");
 		}
-		if(level != null && !level.equals(""))
+		if(buildingRequest.getLevel() != null && !buildingRequest.getLevel().equals(""))
 		{
-			sql.append(" AND b.level like '%" + level + "%' ");
+			sql.append(" AND b.level like '%" + buildingRequest.getLevel() + "%' ");
 		}
-		if(areaFrom != null )
+		if(buildingRequest.getAreaFrom() != null )
 		{
-			sql.append(" AND ra.value >= " + areaFrom);
+			sql.append(" AND ra.value >= " + buildingRequest.getAreaFrom());
 		}
-		if(areaTo != null )
+		if(buildingRequest.getAreaTo() != null )
 		{
-			sql.append(" AND ra.value <= " + areaTo);
+			sql.append(" AND ra.value <= " + buildingRequest.getAreaTo());
 		}
-		if(rentPriceFrom != null )
+		if(buildingRequest.getRentPriceFrom() != null )
 		{
-			sql.append(" AND b.rentprice >= " + rentPriceFrom);
+			sql.append(" AND b.rentprice >= " + buildingRequest.getRentPriceFrom());
 		}
-		if(rentPriceTo != null )
+		if(buildingRequest.getRentPriceTo() != null )
 		{
-			sql.append(" AND b.rentprice <= " + rentPriceTo);
+			sql.append(" AND b.rentprice <= " + buildingRequest.getRentPriceTo());
 		}
-		if(managerName != null && !managerName.equals(""))
+		if(buildingRequest.getManagerName() != null && !buildingRequest.getManagerName().equals(""))
 		{
-			sql.append(" AND b.managername like '%" + managerName + "%' ");
+			sql.append(" AND b.managername like '%" + buildingRequest.getManagerName() + "%' ");
 		}
-		if(managerPhoneNumber != null && !managerPhoneNumber.equals(""))
+		if(buildingRequest.getManagerPhoneNumber() != null && !buildingRequest.getManagerPhoneNumber().equals(""))
 		{
-			sql.append(" AND b.managerphonenumber like '%" + managerPhoneNumber + "%' ");
+			sql.append(" AND b.managerphonenumber like '%" + buildingRequest.getManagerPhoneNumber() + "%' ");
 		}
-		if(userId != null )
+		if(buildingRequest.getUserId() != null )
 		{
-			sql.append(" AND u.id = " + userId);
+			sql.append(" AND u.id = " + buildingRequest.getUserId());
 		}
-		if(renttypeCode != null)
+		if(buildingRequest.getRenttypeCode().size() != 0)
 		{
 			sql.append(" AND (");
-			for(String item : renttypeCode) 
+			for(String item : buildingRequest.getRenttypeCode()) 
 			{
 				if(item != null && item.equals(""))
 				{
@@ -108,9 +107,9 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				}
 				
 			}
-			sql.append(" 1 = 0) ");
+			sql.append(" 1 = 1) ");
 		}
-		//sql.append(" GROUP BY b.id");
+		sql.append(" GROUP BY b.id");
 		try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql.toString());) { // rs trả về từng hàng của building
