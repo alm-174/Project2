@@ -94,7 +94,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}
 		if(buildingRequest.getUserId() != null )
 		{
-			sql.append(" AND u.id = " + buildingRequest.getUserId());
+			sql.append(" AND ab.staffid = " + buildingRequest.getUserId());
 		}
 		if(buildingRequest.getRenttypeCode().size() != 0)
 		{
