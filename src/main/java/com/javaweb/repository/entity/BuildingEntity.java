@@ -11,7 +11,7 @@ public class BuildingEntity {
 	private String managerName;
 	private String managerPhoneNumber;
 	private Integer floorArea;
-	private Integer areaFree;
+	private String areaFree;
 	private Integer rentPrice;
 	private Integer serviceFee;
 	private Integer brokerageFee;
@@ -63,10 +63,10 @@ public class BuildingEntity {
 	public void setFloorArea(Integer floorArea) {
 		this.floorArea = floorArea;
 	}
-	public Integer getAreaFree() {
+	public String getAreaFree() {
 		return areaFree;
 	}
-	public void setAreaFree(Integer areaFree) {
+	public void setAreaFree(String areaFree) {
 		this.areaFree = areaFree;
 	}
 	public Integer getRentPrice() {
