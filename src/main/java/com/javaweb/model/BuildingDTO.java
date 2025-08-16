@@ -7,7 +7,7 @@ public class BuildingDTO {
 	private String managerName;
 	private String managerPhoneNumber;
 	private Long floorArea;
-	private String areaFree;
+	private String RentArea;
 	private Long rentPrice;
 	private Long serviceFee;
 	public String getName() {
@@ -46,11 +46,12 @@ public class BuildingDTO {
 	public void setFloorArea(Long floorArea) {
 		this.floorArea = floorArea;
 	}
-	public String getAreaFree() {
-		return areaFree;
+
+	public String getRentArea() {
+		return RentArea;
 	}
-	public void setAreaFree(String areaFree) {
-		this.areaFree = areaFree;
+	public void setRentArea(String rentArea) {
+		RentArea = rentArea;
 	}
 	public Long getRentPrice() {
 		return rentPrice;
