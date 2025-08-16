@@ -43,7 +43,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			sql.append(" inner join estatebasic.rentarea ra on b.id = ra.buildingid ");
 		}
 	}
-	//1h30p
+
 	public static void queryNomal(Map<String, Object> params, StringBuilder where) {
 		for(Map.Entry<String, Object> it : params.entrySet()) {
 			if(!it.getKey().equals("staffId") && !it.getKey().equals("typeCode")
@@ -75,11 +75,11 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		String rentAreaFrom = (String)params.get("areaFrom");
 		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
 		{
-			if(StringUtil.checkString(rentAreaFrom))
+			if(NumberUtil.isNumber(rentAreaFrom))
 			{
 				where.append(" AND ra.value >=" + rentAreaFrom);
 			}
-			if(StringUtil.checkString(rentAreaTo))
+			if(NumberUtil.isNumber(rentAreaTo))
 			{
 				where.append(" AND ra.value <=" + rentAreaTo);
 			}
@@ -88,32 +88,37 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		String rentPriceFrom = (String)params.get("rentPriceFrom");
 		if(StringUtil.checkString(rentPriceTo) == true || StringUtil.checkString(rentPriceFrom) == true)
 		{
-			if(StringUtil.checkString(rentPriceFrom))
+			if(NumberUtil.isNumber(rentPriceFrom))
 			{
 				where.append(" AND b.rentprice >=" + rentPriceFrom);
 			}
-			if(StringUtil.checkString(rentPriceTo))
+			if(NumberUtil.isNumber(rentPriceTo))
 			{
 				where.append(" AND b.rentprice <=" + rentPriceTo);
 			}
 		}
 		
-		if(typeCode != null && typeCode.size() != 0)
-		{
-			where.append(" AND renttype.code IN(" + String.join(",", typeCode) + ")");
+		if (typeCode != null && typeCode.size() != 0) {
+		    List<String> code = new ArrayList<>();
+		    for (String item : typeCode) {
+		        code.add("'" + item + "'");
+		    }
+		    where.append(" AND renttype.code IN (" + String.join(",", code) + ") ");
 		}
+
 	}
 	
 	
 	@Override
 	public List<BuildingEntity> findAll(Map<String, Object> params, List<String> typeCode) {
 		
-		StringBuilder sql = new StringBuilder("SELECT b.name, b.districtid, b.street, b.ward, b.numberofbasement,  b.floorarea, b.rentprice, "
-				+ " b.managername, b.managerphonenumber,  b.servicefee, b.brokeragefee FROM building b ");
+		StringBuilder sql = new StringBuilder("SELECT b.id, b.name, b.districtid, b.street, b.ward, b.numberofbasement,  b.floorarea, b.rentprice, "
+				+ " b.managername, b.managerphonenumber,  b.servicefee, b.brokeragefee FROM estatebasic.building b ");
 		joinTable(params, typeCode, sql);
 		StringBuilder where = new StringBuilder("WHERE 1=1 ");
 		queryNomal(params, where);
 		querySpecial(params, typeCode, where);
+		where.append(" GROUP BY b.id");
 		sql.append(where);
 		
 		
@@ -132,7 +137,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				building.setManagerName(rs.getString("managername"));
 				building.setManagerPhoneNumber(rs.getString("managerphonenumber"));
 				building.setFloorArea(rs.getInt("floorarea"));
-				building.setAreaFree(null);
+				//building.setAreaFree(null);
 				building.setRentPrice(rs.getInt("rentprice"));
 				building.setServiceFee(rs.getInt("servicefee"));
 				building.setBrokerageFee(rs.getInt("brokeragefee"));
