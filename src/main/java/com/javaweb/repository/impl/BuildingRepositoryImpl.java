@@ -125,7 +125,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		List<BuildingEntity> result = new ArrayList<>();
 		try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql.toString());) { // rs trả về từng hàng của building
+				ResultSet rs = stmt.executeQuery(sql.toString())) { // rs trả về từng hàng của building
 			while (rs.next()) {
 				BuildingEntity building = new BuildingEntity();
 				building.setId(rs.getLong("id"));
@@ -133,14 +133,14 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				building.setDistrictid(rs.getLong("districtid"));
 				building.setStreet(rs.getString("street"));
 				building.setWard(rs.getString("ward"));
-				building.setNumberOfBasement(rs.getInt("numberofbasement"));
+				building.setNumberOfBasement(rs.getLong("numberofbasement"));
 				building.setManagerName(rs.getString("managername"));
 				building.setManagerPhoneNumber(rs.getString("managerphonenumber"));
-				building.setFloorArea(rs.getInt("floorarea"));
-				//building.setAreaFree(null);
-				building.setRentPrice(rs.getInt("rentprice"));
-				building.setServiceFee(rs.getInt("servicefee"));
-				building.setBrokerageFee(rs.getInt("brokeragefee"));
+				building.setFloorArea(rs.getLong("floorarea"));
+				building.setAreaFree(null);
+				building.setRentPrice(rs.getLong("rentprice"));
+				building.setServiceFee(rs.getLong("servicefee"));
+				building.setBrokerageFee(rs.getLong("brokeragefee"));
 				result.add(building);
 			}
 

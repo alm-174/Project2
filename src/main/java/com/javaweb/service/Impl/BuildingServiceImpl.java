@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.javaweb.model.BuildingDTO;
 import com.javaweb.repository.BuildingRepository;
+import com.javaweb.repository.DistrictRepository;
 import com.javaweb.repository.entity.BuildingEntity;
+import com.javaweb.repository.entity.DistrictEntity;
 import com.javaweb.service.BuildingService;
 
 @Service
@@ -17,6 +19,8 @@ public class BuildingServiceImpl implements BuildingService{
 
 	@Autowired //tìm kiếm các interface 
 	private BuildingRepository buildingRepository;
+	@Autowired 
+	private DistrictRepository districtRepository;
 	@Override
 	public List<BuildingDTO> findAll(Map<String, Object> params, List<String> typeCode) {
 
@@ -26,7 +30,8 @@ public class BuildingServiceImpl implements BuildingService{
 		{
 			BuildingDTO building = new BuildingDTO();
 			building.setName(item.getName());
-			building.setAddress(item.getStreet() + ", " + item.getWard());
+			DistrictEntity districtName = districtRepository.findNameById(item.getDistrictid());
+			building.setAddress(item.getStreet() + ", " + item.getWard() + ", " + districtName.getName());
 			building.setNumberOfBasement(item.getNumberOfBasement());
 			result.add(building);
 			}
