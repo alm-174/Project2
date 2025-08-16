@@ -2,6 +2,7 @@ package com.javaweb.service.Impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,9 @@ public class BuildingServiceImpl implements BuildingService{
 	@Autowired //tìm kiếm các interface 
 	private BuildingRepository buildingRepository;
 	@Override
-	public List<BuildingDTO> findAll(String name, Long districtid) {
+	public List<BuildingDTO> findAll(Map<String, Object> params, List<String> typeCode) {
 
-		List<BuildingEntity> buildingEntities = buildingRepository.findAll(name, districtid);
+		List<BuildingEntity> buildingEntities = buildingRepository.findAll(params, typeCode);
 		List<BuildingDTO> result = new ArrayList<BuildingDTO>();
 		for (BuildingEntity item : buildingEntities)
 		{

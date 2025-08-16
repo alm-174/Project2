@@ -1,6 +1,7 @@
 package com.javaweb.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,13 +19,12 @@ public class BuildingAPI {
 	private BuildingService buildingService;
 
 	@PostMapping(value = "/api/building/")
-	public List<BuildingDTO> getBuilding3(@RequestParam(name = "name", required = false) String name,
-										@RequestParam(name = "districtid", required = false) Long districtid,
-										@RequestParam(name = "typecode", required = false) List<String> typeCode) {
-
-		List<BuildingDTO> result = buildingService.findAll(name, districtid);
+	public List<BuildingDTO> getBuilding3(@RequestParam Map<String, Object> params,
+									@RequestParam (name="typeCode", required = false) List<String> typeCode) {
+							//Khi 1 data nhieu thi nen nhan dang list
+		List<BuildingDTO> result = buildingService.findAll(params, typeCode);
 		return result;
-
+		
 	}
 	
 
