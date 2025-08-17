@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -73,6 +74,8 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		String rentAreaFrom = (String)params.get("areaFrom");
 		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
 		{
+			where.append(" AND EXITS(SELECT * FROM rentarea ra WHERE b.id = ra.buildingid ");
+			
 			if(NumberUtil.isNumber(rentAreaFrom))
 			{
 				where.append(" AND ra.value >=" + rentAreaFrom);
@@ -81,6 +84,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			{
 				where.append(" AND ra.value <=" + rentAreaTo);
 			}
+			where.append(") ");
 		}
 		String rentPriceTo = (String)params.get("rentPriceTo");
 		String rentPriceFrom = (String)params.get("rentPriceFrom");
@@ -95,13 +99,20 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				where.append(" AND b.rentprice <=" + rentPriceTo);
 			}
 		}
-		
-		if (typeCode != null && typeCode.size() != 0) {
+		//java 7
+		/*if (typeCode != null && typeCode.size() != 0) {
 		    List<String> code = new ArrayList<>();
 		    for (String item : typeCode) {
 		        code.add("'" + item + "'");
 		    }
 		    where.append(" AND renttype.code IN (" + String.join(",", code) + ") ");
+		}*/
+		
+		//java 8
+		if (typeCode != null && typeCode.size() != 0) {
+			where.append(" AND(");
+			String sql = typeCode.stream().map(it -> "renttype.code Like" + "'%" + it + "%'").collect(Collectors.joining(" OR "));
+			where.append(sql + " ) ");
 		}
 
 	}
