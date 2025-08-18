@@ -68,7 +68,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		
 		try {
 			Field[] fields = BuildingSearchBuilder.class.getDeclaredFields();
-			for (Field item : fields) { //item la 1 field cua doi tuong do
+			for (Field item : fields) { 
 				item.setAccessible(true);
 				String fieldName = item.getName();
 				if(!fieldName.equals("staffId") && !fieldName.equals("typeCode")
