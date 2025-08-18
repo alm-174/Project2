@@ -1,5 +1,6 @@
 package com.javaweb.repository.impl;
 
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
+import com.javaweb.builder.BuildingSearchBuilder;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.entity.BuildingEntity;
 import com.javaweb.utils.ConnectionJDBCutil;
@@ -23,28 +25,29 @@ import com.javaweb.utils.StringUtil;
 public class BuildingRepositoryImpl implements BuildingRepository {
 
 
-	public static void joinTable(Map<String, Object> params, List<String> typeCode, StringBuilder sql) {
+	public static void joinTable(BuildingSearchBuilder buildingSearchBuilder, StringBuilder sql) {
 		//Long staffId = Long.parseLong(params.get("staffId").toString());
-		String staffId = (String)params.get("staffId");
+		String staffId = buildingSearchBuilder.getStaffId().toString();
 		if(StringUtil.checkString(staffId)) {
 			sql.append("  inner join estatebasic.assignmentbuilding ab on ab.buildingid = b.id ");
 		}
+		List<String> typeCode = buildingSearchBuilder.getTypeCode();
 		if(typeCode != null && typeCode.size() != 0)
 		{
 			//sql.append("");
 			sql.append(" inner join estatebasic.buildingrenttype br on b.id = br.buildingid ");
 			sql.append(" inner join estatebasic.renttype r on r.id = br.renttypeid");
 		}
-		String rentAreaTo = (String)params.get("areaTo");
-		String rentAreaFrom = (String)params.get("areaFrom");
+		String rentAreaTo = buildingSearchBuilder.getAreaTo().toString();
+		String rentAreaFrom = buildingSearchBuilder.getAreaFrom().toString();
 		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
 		{
 			sql.append(" inner join estatebasic.rentarea ra on b.id = ra.buildingid ");
 		}
 	}
 
-	public static void queryNomal(Map<String, Object> params, StringBuilder where) {
-		for(Map.Entry<String, Object> it : params.entrySet()) {
+	public static void queryNomal(BuildingSearchBuilder buildingSearchBuilder, StringBuilder where) {
+		/*for(Map.Entry<String, Object> it : params.entrySet()) {
 			if(!it.getKey().equals("staffId") && !it.getKey().equals("typeCode")
 					&& !it.getKey().startsWith("area") && !it.getKey().startsWith("rentPrice"))
 			{
@@ -61,6 +64,34 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 					}
 				}
 			}
+		}*/
+		
+		try {
+			Field[] fields = BuildingSearchBuilder.class.getDeclaredFields();
+			for (Field item : fields) { //item la 1 field cua doi tuong do
+				item.setAccessible(true);
+				String fieldName = item.getName();
+				if(!fieldName.equals("staffId") && !fieldName.equals("typeCode")
+						&& !fieldName.startsWith("area") && !fieldName.startsWith("rentPrice")) {
+					String value = item.get(buildingSearchBuilder).toString();
+					if(StringUtil.checkString(value))
+					{
+						if(NumberUtil.isNumber(value) == true)
+						{
+							where.append(" AND b." + it.getKey() + " = " + value);
+						}
+						else
+						{
+							where.append(" AND b." + it.getKey() + " LIKE '%" + value + "%'	");
+						}
+					}
+				}
+			}
+			
+			
+		}catch(Exception ex)
+		{
+			ex.printStackTrace();
 		}
 	}
 	
@@ -119,7 +150,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	
 	
 	@Override
-	public List<BuildingEntity> findAll(Map<String, Object> params, List<String> typeCode) {
+	public List<BuildingEntity> findAll(BuildingSearchBuilder buildingSearchBuilder) {
 		
 		StringBuilder sql = new StringBuilder("SELECT b.id, b.name, b.districtid, b.street, b.ward, b.numberofbasement,  b.floorarea, b.rentprice, "
 				+ " b.managername, b.managerphonenumber,  b.servicefee, b.brokeragefee FROM estatebasic.building b ");
