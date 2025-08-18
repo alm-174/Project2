@@ -74,7 +74,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		String rentAreaFrom = (String)params.get("areaFrom");
 		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
 		{
-			where.append(" AND EXITS(SELECT * FROM rentarea ra WHERE b.id = ra.buildingid ");
+			where.append(" AND EXISTS(SELECT * FROM estatebasic.rentarea ra WHERE b.id = ra.buildingid ");
 			
 			if(NumberUtil.isNumber(rentAreaFrom))
 			{
@@ -111,7 +111,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		//java 8
 		if (typeCode != null && typeCode.size() != 0) {
 			where.append(" AND(");
-			String sql = typeCode.stream().map(it -> "renttype.code Like" + "'%" + it + "%'").collect(Collectors.joining(" OR "));
+			String sql = typeCode.stream().map(it -> "r.code Like" + "'%" + it + "%'").collect(Collectors.joining(" OR "));
 			where.append(sql + " ) ");
 		}
 
