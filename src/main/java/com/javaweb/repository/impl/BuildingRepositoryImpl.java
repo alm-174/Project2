@@ -72,7 +72,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}
 		String rentAreaTo = (String)params.get("areaTo");
 		String rentAreaFrom = (String)params.get("areaFrom");
-		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
+		/*if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
 		{
 			where.append(" AND EXISTS(SELECT * FROM estatebasic.rentarea ra WHERE b.id = ra.buildingid ");
 			
@@ -85,7 +85,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				where.append(" AND ra.value <=" + rentAreaTo);
 			}
 			where.append(") ");
-		}
+		}*/
 		String rentPriceTo = (String)params.get("rentPriceTo");
 		String rentPriceFrom = (String)params.get("rentPriceFrom");
 		if(StringUtil.checkString(rentPriceTo) == true || StringUtil.checkString(rentPriceFrom) == true)
@@ -124,7 +124,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		StringBuilder sql = new StringBuilder("SELECT b.id, b.name, b.districtid, b.street, b.ward, b.numberofbasement,  b.floorarea, b.rentprice, "
 				+ " b.managername, b.managerphonenumber,  b.servicefee, b.brokeragefee FROM estatebasic.building b ");
 		joinTable(params, typeCode, sql);
-		StringBuilder where = new StringBuilder("WHERE 1=1 ");
+		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
 		queryNomal(params, where);
 		querySpecial(params, typeCode, where);
 		where.append(" GROUP BY b.id");
@@ -132,9 +132,10 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		
 		
 		List<BuildingEntity> result = new ArrayList<>();
-		try (Connection conn = ConnectionJDBCutil.getConnection();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql.toString())) { // rs trả về từng hàng của building
+		try 
+			(Connection conn = ConnectionJDBCutil.getConnection();
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(sql.toString());) { // rs trả về từng hàng của building
 			while (rs.next()) {
 				BuildingEntity building = new BuildingEntity();
 				building.setId(rs.getLong("id"));

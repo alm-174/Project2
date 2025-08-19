@@ -19,7 +19,7 @@ public class DistrictRepositoryImpl implements DistrictRepository{
 	@Override
 	public DistrictEntity findNameById(Long id) {
 		// TODO Auto-generated method stub
-		String sql = "SELRCT d.name FROM estatebasic.district d WHERE d.id = " + id + ";";
+		String sql = "SELECT d.name FROM estatebasic.district d WHERE d.id = " + id + ";";
 		DistrictEntity districtEntity = new DistrictEntity();
 		try (Connection conn = ConnectionJDBCutil.getConnection();
 				Statement stmt = conn.createStatement();
