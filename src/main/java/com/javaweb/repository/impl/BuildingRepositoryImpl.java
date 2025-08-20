@@ -47,29 +47,12 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	}
 
 	public static void queryNomal(BuildingSearchBuilder buildingSearchBuilder, StringBuilder where) {
-		/*for(Map.Entry<String, Object> it : params.entrySet()) {
-			if(!it.getKey().equals("staffId") && !it.getKey().equals("typeCode")
-					&& !it.getKey().startsWith("area") && !it.getKey().startsWith("rentPrice"))
-			{
-				String value = it.getValue().toString();
-				if(StringUtil.checkString(value))
-				{
-					if(NumberUtil.isNumber(value) == true)
-					{
-						where.append(" AND b." + it.getKey() + " = " + value);
-					}
-					else
-					{
-						where.append(" AND b." + it.getKey() + " LIKE '%" + value + "%'	");
-					}
-				}
-			}
-		}*/
+		
 		
 		try {
 			Field[] fields = BuildingSearchBuilder.class.getDeclaredFields();
 			for (Field item : fields) { 
-				item.setAccessible(true);
+				item.setAccessible(true); // bắt buộc có để đọc các field. Cho phép bạn đọc/ghi giá trị của field private, hoặc gọi method private thông qua reflection.
 				String fieldName = item.getName();
 				if(!fieldName.equals("staffId") && !fieldName.equals("typeCode")
 						&& !fieldName.startsWith("area") && !fieldName.startsWith("rentPrice")) {
@@ -78,11 +61,11 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 					{
 						if(NumberUtil.isNumber(value) == true)
 						{
-							where.append(" AND b." + it.getKey() + " = " + value);
+							where.append(" AND b." + fieldName + " = " + value);
 						}
 						else
 						{
-							where.append(" AND b." + it.getKey() + " LIKE '%" + value + "%'	");
+							where.append(" AND b." + fieldName + " LIKE '%" + value + "%'	");
 						}
 					}
 				}
@@ -95,14 +78,14 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}
 	}
 	
-	public static void querySpecial(Map<String, Object> params, List<String> typeCode, StringBuilder where) {
-		String staffId = (String)params.get("staffId");
+	public static void querySpecial(BuildingSearchBuilder buildingSearchBuilder, StringBuilder where) {
+		String staffId = buildingSearchBuilder.getStaffId().toString();
 		if(StringUtil.checkString(staffId)) {
 			where.append(" AND ab.staffid = " + staffId);
 			
 		}
-		String rentAreaTo = (String)params.get("areaTo");
-		String rentAreaFrom = (String)params.get("areaFrom");
+		String rentAreaTo = buildingSearchBuilder.getAreaTo().toString();
+		String rentAreaFrom = buildingSearchBuilder.getAreaFrom().toString();
 		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
 		{
 			where.append(" AND EXITS(SELECT * FROM rentarea ra WHERE b.id = ra.buildingid ");
@@ -117,8 +100,8 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			}
 			where.append(") ");
 		}
-		String rentPriceTo = (String)params.get("rentPriceTo");
-		String rentPriceFrom = (String)params.get("rentPriceFrom");
+		String rentPriceTo = buildingSearchBuilder.getRentPriceTo().toString();
+		String rentPriceFrom = buildingSearchBuilder.getRentPriceFrom().toString();
 		if(StringUtil.checkString(rentPriceTo) == true || StringUtil.checkString(rentPriceFrom) == true)
 		{
 			if(NumberUtil.isNumber(rentPriceFrom))
@@ -140,6 +123,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		}*/
 		
 		//java 8
+		List<String> typeCode = buildingSearchBuilder.getTypeCode();
 		if (typeCode != null && typeCode.size() != 0) {
 			where.append(" AND(");
 			String sql = typeCode.stream().map(it -> "renttype.code Like" + "'%" + it + "%'").collect(Collectors.joining(" OR "));
@@ -154,10 +138,10 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		
 		StringBuilder sql = new StringBuilder("SELECT b.id, b.name, b.districtid, b.street, b.ward, b.numberofbasement,  b.floorarea, b.rentprice, "
 				+ " b.managername, b.managerphonenumber,  b.servicefee, b.brokeragefee FROM estatebasic.building b ");
-		joinTable(params, typeCode, sql);
+		joinTable(buildingSearchBuilder, sql);
 		StringBuilder where = new StringBuilder("WHERE 1=1 ");
-		queryNomal(params, where);
-		querySpecial(params, typeCode, where);
+		queryNomal(buildingSearchBuilder, where);
+		querySpecial(buildingSearchBuilder, where);
 		where.append(" GROUP BY b.id");
 		sql.append(where);
 		
