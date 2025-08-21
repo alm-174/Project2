@@ -27,8 +27,8 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 
 	public static void joinTable(BuildingSearchBuilder buildingSearchBuilder, StringBuilder sql) {
 		//Long staffId = Long.parseLong(params.get("staffId").toString());
-		String staffId = buildingSearchBuilder.getStaffId().toString();
-		if(StringUtil.checkString(staffId)) {
+		Long staffId = buildingSearchBuilder.getStaffId();
+		if(staffId != null) {
 			sql.append("  inner join estatebasic.assignmentbuilding ab on ab.buildingid = b.id ");
 		}
 		List<String> typeCode = buildingSearchBuilder.getTypeCode();
@@ -38,9 +38,9 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 			sql.append(" inner join estatebasic.buildingrenttype br on b.id = br.buildingid ");
 			sql.append(" inner join estatebasic.renttype r on r.id = br.renttypeid");
 		}
-		String rentAreaTo = buildingSearchBuilder.getAreaTo().toString();
-		String rentAreaFrom = buildingSearchBuilder.getAreaFrom().toString();
-		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
+		Long rentAreaTo = buildingSearchBuilder.getAreaTo();
+		Long rentAreaFrom = buildingSearchBuilder.getAreaFrom();
+		if(rentAreaTo != null || rentAreaFrom != null)
 		{
 			sql.append(" inner join estatebasic.rentarea ra on b.id = ra.buildingid ");
 		}
@@ -56,14 +56,14 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 				String fieldName = item.getName();
 				if(!fieldName.equals("staffId") && !fieldName.equals("typeCode")
 						&& !fieldName.startsWith("area") && !fieldName.startsWith("rentPrice")) {
-					String value = item.get(buildingSearchBuilder).toString();
-					if(StringUtil.checkString(value))
+					Object value = item.get(buildingSearchBuilder);
+					if(value != null)
 					{
-						if(NumberUtil.isNumber(value) == true)
+						if(item.getType().getName().equals("java.lang.Long") || item.getType().getName().equals("java.lang.Integer"))
 						{
 							where.append(" AND b." + fieldName + " = " + value);
 						}
-						else
+						else if(item.getType().getName().equals("java.lang.String"))
 						{
 							where.append(" AND b." + fieldName + " LIKE '%" + value + "%'	");
 						}
@@ -79,36 +79,36 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	}
 	
 	public static void querySpecial(BuildingSearchBuilder buildingSearchBuilder, StringBuilder where) {
-		String staffId = buildingSearchBuilder.getStaffId().toString();
-		if(StringUtil.checkString(staffId)) {
+		Long staffId = buildingSearchBuilder.getStaffId();
+		if(staffId != null) {
 			where.append(" AND ab.staffid = " + staffId);
 			
 		}
-		String rentAreaTo = buildingSearchBuilder.getAreaTo().toString();
-		String rentAreaFrom = buildingSearchBuilder.getAreaFrom().toString();
-		if(StringUtil.checkString(rentAreaTo) == true || StringUtil.checkString(rentAreaFrom) == true)
+		Long rentAreaTo = buildingSearchBuilder.getAreaTo();
+		Long rentAreaFrom = buildingSearchBuilder.getAreaFrom();
+		if(rentAreaTo != null || rentAreaFrom != null)
 		{
-			where.append(" AND EXITS(SELECT * FROM rentarea ra WHERE b.id = ra.buildingid ");
+			where.append(" AND EXISTS (SELECT * FROM rentarea ra WHERE b.id = ra.buildingid ");
 			
-			if(NumberUtil.isNumber(rentAreaFrom))
+			if(rentAreaFrom != null)
 			{
 				where.append(" AND ra.value >=" + rentAreaFrom);
 			}
-			if(NumberUtil.isNumber(rentAreaTo))
+			if(rentAreaTo != null)
 			{
 				where.append(" AND ra.value <=" + rentAreaTo);
 			}
 			where.append(") ");
 		}
-		String rentPriceTo = buildingSearchBuilder.getRentPriceTo().toString();
-		String rentPriceFrom = buildingSearchBuilder.getRentPriceFrom().toString();
-		if(StringUtil.checkString(rentPriceTo) == true || StringUtil.checkString(rentPriceFrom) == true)
+		Long rentPriceTo = buildingSearchBuilder.getRentPriceTo();
+		Long rentPriceFrom = buildingSearchBuilder.getRentPriceFrom();
+		if(rentPriceTo != null || rentPriceFrom != null)
 		{
-			if(NumberUtil.isNumber(rentPriceFrom))
+			if(rentPriceFrom != null)
 			{
 				where.append(" AND b.rentprice >=" + rentPriceFrom);
 			}
-			if(NumberUtil.isNumber(rentPriceTo))
+			if(rentPriceTo != null)
 			{
 				where.append(" AND b.rentprice <=" + rentPriceTo);
 			}
@@ -126,7 +126,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 		List<String> typeCode = buildingSearchBuilder.getTypeCode();
 		if (typeCode != null && typeCode.size() != 0) {
 			where.append(" AND(");
-			String sql = typeCode.stream().map(it -> "renttype.code Like" + "'%" + it + "%'").collect(Collectors.joining(" OR "));
+			String sql = typeCode.stream().map(it -> "r.code Like" + "'%" + it + "%'").collect(Collectors.joining(" OR "));
 			where.append(sql + " ) ");
 		}
 
