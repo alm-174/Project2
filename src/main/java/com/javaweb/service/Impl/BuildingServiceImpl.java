@@ -53,7 +53,15 @@ public class BuildingServiceImpl implements BuildingService {
 	@Override
 	public void createBuilding(BuildingRequestDTO buildingRequestDTO) {
 		// TODO Auto-generated method stub
-		BuildingEntity buildingEntity = new BuildingEntity();
+		BuildingEntity buildingEntity;
+		if(buildingRequestDTO.getId() != null)
+		{
+			buildingEntity = buildingRepository.findById(buildingRequestDTO.getId()).get();
+		}
+		else
+		{
+			buildingEntity = new BuildingEntity();
+		}
 		buildingEntity.setName(buildingRequestDTO.getName());
 		buildingEntity.setStreet(buildingRequestDTO.getStreet());
 		buildingEntity.setWard(buildingRequestDTO.getWard());
